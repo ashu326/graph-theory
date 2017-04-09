@@ -1,0 +1,53 @@
+#include<iostream>
+#include<set>
+#include<vector>
+#define INF 1000000000
+using namespace std;
+const int MAX = 100000;
+vector<pair<int,int> > graph[MAX+1];
+int dist[MAX+1];
+void DIJKSTRA(int source){
+  set < pair < int, int > > Q;
+  Q.insert(make_pair(0,source));
+    while(!Q.empty()){
+     int cost = (*(Q.begin())).first;
+     int parent = (*(Q.begin())).second;
+     Q.erase(Q.begin());
+     for(int i = 0; i < graph[parent].size() ; ++i){
+       int child  =   graph[parent][i].first;
+       int w = graph[parent][i].second;
+        if(dist[child] > cost + w){
+        if(dist[child] != 1e9 )
+        Q.erase(Q.find(make_pair(dist[child],child)));
+        dist[child] = w + cost;
+        Q.insert(make_pair(dist[child],child));
+        }
+     }
+    }
+}
+int main(){
+        int  n , e;
+      scanf("%d%d",&n,&e);
+       for( int i = 0 ; i <= n ; ++i ){
+         graph[i].clear();
+         dist[i] = INF;
+        }
+         while( e-- ){
+           int u , v , c;
+           scanf("%d%d%d",&u,&v,&c);
+           graph[u].push_back( make_pair(v,c) );
+           graph[v].push_back( make_pair(u,c) );
+         }
+            int source;
+            scanf("%d",&source);
+             dist[source] = 0;
+            DIJKSTRA(source);
+
+          for(int i = 1;  i<= n ; ++i ){
+            if(dist[i]==INF && i != source)
+            printf("unreachable node\n");
+            else
+            printf("%d\n",dist[i]);
+     }
+
+}
