@@ -1,0 +1,70 @@
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <fstream>
+#define pb push_back
+using namespace std ;
+
+bool articulation_point[300001] ;
+int dfs_count, root_child ;
+int dfs_low[300001], dfs_num[300001] ;
+vector< int > graph[300001] ;
+
+void dfs(int s, int p)
+{
+    dfs_low[s] = dfs_num[s] = dfs_count++ ;
+    for(int i = 0; i < graph[s].size(); i++)
+    {
+        int child = graph[s][i] ;
+        if(dfs_num[child] == -1)
+        {
+            if(s == 1)
+                root_child++ ;
+            dfs(child, s) ;
+            
+            if(dfs_low[child] >= dfs_num[s]) // there is no back edge
+                articulation_point[s] = 1 ;
+            
+            dfs_low[s] = min(dfs_low[s], dfs_low[child]) ;
+        }
+        else if(child != p)
+            dfs_low[s] = min(dfs_low[s], dfs_num[child]) ;
+    }
+}
+
+int main()
+{
+    int n , m;
+    while(1)
+    {
+        cin >> n >> m ;
+        if(n == 0 and m == 0)
+            break ;
+        root_child = dfs_count = 0 ;
+        for(int i = 0; i <= n; i++)
+        {
+            graph[i].clear() ;
+            articulation_point[i] = 0 ;
+            dfs_low[i] = -1 ;
+            dfs_num[i] = -1 ;
+        }
+        for(int i = 0; i < m; i++)
+        {
+            int u, v ;
+            cin >> u >> v ;
+            graph[u].pb(v);
+            graph[v].pb(u) ;
+        }
+        dfs(1, 1) ;
+        int ans = 0 ;//to calculate number of articulation point
+        articulation_point[1] = (root_child > 1) ;
+        for(int i = 1; i <= n; i++)
+            if(articulation_point[i]) //1 if vertex is articulation point
+                ans++ ;
+        
+        cout << ans << endl ;
+    }
+    return 0 ;
+}
+
