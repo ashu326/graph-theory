@@ -1,0 +1,63 @@
+// Spoj problem - Project File Dependencies(PFDEP)
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cstring>
+#include <fstream>
+#include <queue>
+#define ll long long
+#define inf -10000000000
+using namespace std ;
+ 
+int in_degree[1001], out_degree[1001] ;
+vector< int > graph[10001] ;
+vector< int > topo ;
+ 
+void topological_sort(int n) // kahn's algo
+{
+    priority_queue< int > q ;
+    for(int i = 1; i <= n; i++)
+        if(in_degree[i] == 0)
+            q.push(-1 * i) ;
+        
+    while(!q.empty())
+    {
+        int x = -1 * q.top() ;
+        q.pop() ;
+        topo.push_back(x) ;
+        for(int i = 0; i < graph[x].size(); i++)
+        {
+            int to = graph[x][i] ;
+            //cout << to << endl ;
+            in_degree[to]-- ;
+            if(in_degree[to] == 0)
+                q.push(-1 * to) ;
+        }
+    }
+}
+int main()
+{
+    //ifstream cin("input.txt") ;
+    //ofstream cout("output.txt") ;
+    int n, m ;
+    cin >> n >> m ;
+    for(int i = 0; i < m;i++)
+    {
+        int to, k ;
+        cin >> to >> k ;
+        for(int i =0; i < k; i++)
+        {
+            int from ;
+            cin >> from ;
+            graph[from].push_back(to) ;
+            in_degree[to]++ ;
+            out_degree[from]++ ;
+        }
+    }
+    topological_sort(n) ;
+    for(int i = 0; i < topo.size(); i++)
+        cout << topo[i] << ' ' ;
+    
+    return 0 ;
+} 
